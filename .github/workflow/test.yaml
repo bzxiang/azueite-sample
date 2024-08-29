@@ -1,0 +1,32 @@
+name: azurite sample
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: test for azurite
+    runs-on: ububtu-latest
+    container:
+      image: python:3.10.10
+    steps:
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'latest'
+
+      - name: Install Azurite 
+        run: npm install -g azurite
+      
+      - name: Azurite Init
+        shell: bash
+        run: |
+          azureite -s -l ./tests/azurite -d ./tests/azurite/debug.log &
+
+      - name: Check Azurite logs
+        run: cat ./tests/azurite/debug.log
+      
+      - name: test curl
+        shell: bash
+        run: curl http://127.0.0.1:10000
